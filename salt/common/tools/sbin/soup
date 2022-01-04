@@ -662,8 +662,6 @@ up_to_2.3.90() {
 
 up_to_2.3.100() {
   echo "Updating to Security Onion to 2.3.100"
-  echo "Populating the mine with network.ip_addrs pillar.host.mainint for each host."
-  salt \* cmd.run cmd='MAININT=$(salt-call pillar.get host:mainint --out=newline_values_only) && salt-call mine.send name=network.ip_addrs interface="$MAININT"'
   fix_wazuh
 }
 
@@ -1033,7 +1031,10 @@ main() {
     echo ""
     echo "Ensuring python modules for Salt are installed and patched."
     salt-call state.apply salt.python3-influxdb -l info queue=True
+
     echo ""
+    echo "Populating the mine with network.ip_addrs pillar.host.mainint for each host."
+    salt \* cmd.run cmd='MAININT=$(salt-call pillar.get host:mainint --out=newline_values_only) && salt-call mine.send name=network.ip_addrs interface="$MAININT"'
 
     # Only regenerate osquery packages if Fleet is enabled
     FLEET_MANAGER=$(lookup_pillar fleet_manager)
