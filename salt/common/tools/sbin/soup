@@ -870,10 +870,10 @@ verify_latest_repo_client_state_dir() {
   else
     echo "Updating the repo.client state directory."
     echo ""
-    [ ! -d "$DEFAULT_SALT_DIR/salt/repo/client" ] && mkdir -p "$DEFAULT_SALT_DIR/salt/repo/client"
-    cp -r $UPDATE_DIR/salt/repo/client $DEFAULT_SALT_DIR/salt/repo/client
+    [ ! -d "$DEFAULT_SALT_DIR/salt/repo/client" ] && mkdir -p "$DEFAULT_SALT_DIR/salt/repo"
+    cp -r $UPDATE_DIR/salt/repo/client $DEFAULT_SALT_DIR/salt/repo
     echo "Running repo.client state."
-    salt-call state.apply repo.client queue=True
+    salt-call state.apply repo.client -linfo queue=True
   fi
 
 }
