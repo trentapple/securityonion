@@ -860,6 +860,23 @@ verify_latest_update_script() {
   fi
 }
 
+verify_latest_repo_client_state_dir() {
+  CURRENTSTATEDIR=$(find $DEFAULT_SALT_DIR/salt/repo/client/ -type f -exec md5sum {} \; | md5sum)
+  GITSTATEDIR=$(find $UPDATE_DIR/salt/repo/client/ -type f -exec md5sum {} \; | md5sum)
+
+  if [[ "$CURRENTSTATEDIR" == "$GITSTATEDIR" ]]; then
+    echo "All files for repo.client state are up to date."
+    echo ""
+  else
+    echo "Updating the repo.client state directory."
+    echo ""
+    cp -r $UPDATE_DIR/salt/repo/client $DEFAULT_SALT_DIR/salt/repo/client
+    echo "Running repo.client state."
+    salt-call state.apply repo.client queue=True
+  fi
+
+}
+
 apply_hotfix() {
   if [[ "$INSTALLEDVERSION" == "2.3.90" ]] ; then
     fix_wazuh
@@ -930,6 +947,9 @@ main() {
   upgrade_check
   upgrade_space
 
+  upgrade_to_2.3.50_repo
+  verify_latest_repo_client_state_dir
+
   echo "Checking for Salt Master and Minion updates."
   upgrade_check_salt
   set -e
@@ -974,8 +994,6 @@ main() {
     echo "Stopping Salt Master service."
     systemctl stop salt-master
     echo ""
-
-    upgrade_to_2.3.50_repo
 
     # Does salt need upgraded. If so update it.
     if [[ $UPGRADESALT -eq 1 ]]; then
