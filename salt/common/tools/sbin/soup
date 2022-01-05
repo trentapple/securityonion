@@ -618,6 +618,9 @@ up_to_2.3.90() {
     fi
   done
   
+  # make sure so-firewall is up to date prior to running it
+  echo "Ensuring so-* scripts are up to date."
+  salt-call state.sls_id utilsyncscripts common queue=True
   # Create Endgame Hostgroup
   echo "Adding endgame hostgroup with so-firewall"
   if so-firewall addhostgroup endgame 2>&1 | grep -q 'Already exists'; then
