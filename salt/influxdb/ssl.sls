@@ -1,3 +1,7 @@
+{% from 'ssl/map.jinja' import HOSTNAME %}
+{% from 'ssl/map.jinja' import MAINIP %}
+{% from 'ssl/map.jinja' import ca_server %}
+
 influxdb_key:
   x509.private_key_managed:
     - name: /etc/pki/influxdb.key
