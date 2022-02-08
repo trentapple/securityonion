@@ -6,7 +6,8 @@
 {% set IMAGEREPO = salt['pillar.get']('global:imagerepo') %}
 
 include:
-  - ssl
+  - ssl.intca
+  - telegraf.ssl
 
 # Add Telegraf to monitor all the things.
 tgraflogdir:
@@ -76,13 +77,9 @@ so-telegraf:
       - /proc:/host/proc:ro
       - /nsm:/host/nsm:ro
       - /etc:/host/etc:ro
-      {% if grains['role'] == 'so-manager' or grains['role'] == 'so-eval' or grains['role'] == 'so-managersearch' %}
-      - /etc/pki/ca.crt:/etc/telegraf/ca.crt:ro
-      {% else %}
       - /etc/ssl/certs/intca.crt:/etc/telegraf/ca.crt:ro
-      {% endif %}
-      - /etc/pki/influxdb.crt:/etc/telegraf/telegraf.crt:ro
-      - /etc/pki/influxdb.key:/etc/telegraf/telegraf.key:ro
+      - /etc/pki/telegraf.crt:/etc/telegraf/telegraf.crt:ro
+      - /etc/pki/telefraf.key:/etc/telegraf/telegraf.key:ro
       - /opt/so/conf/telegraf/scripts:/scripts:ro
       - /opt/so/log/stenographer:/var/log/stenographer:ro
       - /opt/so/log/suricata:/var/log/suricata:ro
@@ -92,16 +89,16 @@ so-telegraf:
       - file: tgrafconf
       - file: tgrafsyncscripts
       - file: node_config
+      - x509: intca
+      - x509: influxdb_crt
+      - x509: influxdb_key
     - require: 
       - file: tgrafconf
       - file: node_config
-      {% if grains['role'] == 'so-manager' or grains['role'] == 'so-eval' or grains['role'] == 'so-managersearch' %}
-      - x509: pki_public_ca_crt
-      {% else %}
-      - x509: trusttheca
-      {% endif %}
+      - x509: intca
       - x509: influxdb_crt
       - x509: influxdb_key
+
 append_so-telegraf_so-status.conf:
   file.append:
     - name: /opt/so/conf/so-status/so-status.conf
