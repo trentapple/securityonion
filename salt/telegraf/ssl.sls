@@ -2,6 +2,9 @@
 {% from 'ssl/map.jinja' import MAINIP %}
 {% from 'ssl/map.jinja' import ca_server %}
 
+include:
+  - ssl.intca
+
 telegraf_key:
   x509.private_key_managed:
     - name: /etc/pki/telegraf.key

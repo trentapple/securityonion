@@ -6,7 +6,6 @@
 {% set IMAGEREPO = salt['pillar.get']('global:imagerepo') %}
 
 include:
-  - ssl.intca
   - telegraf.ssl
 
 # Add Telegraf to monitor all the things.

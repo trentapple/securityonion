@@ -50,7 +50,12 @@ ca_crt_to_mine:
     - mine.send:
        - name: x509.get_pem_entries
        - glob_path: /etc/pki/ca.crt
-    - onchanges: pki_public_ca_crt
+    - state.orchestrate:
+       - name: _orchestrate.ssl.update
+    - onchanges:
+      - x509: pki_public_ca_crt
+
+
 
 cakeyperms:
   file.managed:
