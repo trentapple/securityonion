@@ -9,7 +9,7 @@ include:
   file.managed:
     - source: salt://ca/files/signing_policies.conf
 
-pki_private_key:
+pki_private_ca_key:
   x509.private_key_managed:
     - name: /etc/pki/ca.key
     - bits: 4096
@@ -50,8 +50,6 @@ ca_crt_to_mine:
     - mine.send:
        - name: x509.get_pem_entries
        - glob_path: /etc/pki/ca.crt
-    - state.orchestrate:
-       - name: _orchestrate.ssl.update
     - onchanges:
       - x509: pki_public_ca_crt
 
