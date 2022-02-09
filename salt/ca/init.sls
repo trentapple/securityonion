@@ -55,6 +55,13 @@ ca_crt_to_mine:
     - onchanges:
       - x509: pki_public_ca_crt
 
+orchestrate_ssl_update:
+  salt.runner:
+    - name: state.orchestrate
+    - kwarg:
+        mods: _orchestrate.ssl.update
+    - onchanges:
+      - x509: pki_public_ca_crt
 
 
 cakeyperms:
