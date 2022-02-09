@@ -4,6 +4,7 @@
 
 include:
   - ssl.intca
+  - telegraf.ssl.absent
 
 telegraf_key:
   x509.private_key_managed:
