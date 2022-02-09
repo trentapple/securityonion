@@ -90,14 +90,14 @@ so-telegraf:
       - file: tgrafsyncscripts
       - file: node_config
       - x509: intca
-      - x509: influxdb_crt
-      - x509: influxdb_key
+      - x509: telegraf_crt
+      - x509: telegraf_key
     - require: 
       - file: tgrafconf
       - file: node_config
       - x509: intca
-      - x509: influxdb_crt
-      - x509: influxdb_key
+      - x509: telegraf_crt
+      - x509: telegraf_key
 
 append_so-telegraf_so-status.conf:
   file.append:
