@@ -36,6 +36,3 @@ intca:
   x509.pem_managed:
     - name: /etc/ssl/certs/intca.crt
     - text:  {{ intca_text }}
-    - onchanges_in:
-      - file: remove_telegraf_key
-      - file: remove_telegraf_crt
