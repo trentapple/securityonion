@@ -59,8 +59,7 @@ orchestrate_ssl_update:
     - kwarg:
         mods: _orchestrate.ssl.update
     - onchanges:
-      - x509: pki_public_ca_crt
-
+      - module: ca_crt_to_mine
 
 cakeyperms:
   file.managed:
