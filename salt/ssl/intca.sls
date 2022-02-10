@@ -12,13 +12,12 @@
   {% set COMMONNAME = manager %}
 {% endif %}
 
-{% if grains.id.split('_')|last in ['manager', 'managersearch', 'eval', 'standalone', 'import', 'helixsensor'] %}
 include:
+{% if grains.id.split('_')|last in ['manager', 'managersearch', 'eval', 'standalone', 'import', 'helixsensor'] %}
   - ca
     {% set intca_text = salt['cp.get_file_str']('/etc/pki/ca.crt')|replace('\n', '') %}
     {% set ca_server = grains.id %}
 {% else %}
-include:
   - ca.dirs
     {% set x509dict = salt['mine.get'](manager | lower~'*', 'x509.get_pem_entries') %}
     {% for host in x509dict %}
@@ -30,9 +29,12 @@ include:
     {% set intca_text = global_ca_text[0] %}
     {% set ca_server = global_ca_server[0] %}
 {% endif %}
+  - telegraf.ssl.absent
 
 # Trust the CA
 intca:
   x509.pem_managed:
     - name: /etc/ssl/certs/intca.crt
     - text:  {{ intca_text }}
+    - onchanges_in:
+      - sls: telegraf.ssl.absent
