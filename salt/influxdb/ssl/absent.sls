@@ -1,7 +1,7 @@
-influxdb_key:
+remove_influxdb_key:
   file.absent:
     - name: /etc/pki/influxdb.key
 
-influxdb_crt:
+remove_influxdb_crt:
   file.absent:
     - name: /etc/pki/influxdb.crt
