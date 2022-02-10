@@ -18,7 +18,7 @@ include:
   - salt.minion
   - salt.python3-influxdb
   - ssl.intca
-  - influxdb.ssl
+  - influxdb.ssl.present
   
 # Influx DB
 influxconfdir:

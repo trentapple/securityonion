@@ -13,6 +13,8 @@
 {% endif %}
 
 include:
+  - telegraf.ssl.absent
+  - influxdb.ssl.absent
 {% if grains.id.split('_')|last in ['manager', 'managersearch', 'eval', 'standalone', 'import', 'helixsensor'] %}
   - ca
     {% set intca_text = salt['cp.get_file_str']('/etc/pki/ca.crt')|replace('\n', '') %}
@@ -29,7 +31,7 @@ include:
     {% set intca_text = global_ca_text[0] %}
     {% set ca_server = global_ca_server[0] %}
 {% endif %}
-  - telegraf.ssl.absent
+
 
 # Trust the CA
 intca:
@@ -38,3 +40,4 @@ intca:
     - text:  {{ intca_text }}
     - onchanges_in:
       - sls: telegraf.ssl.absent
+      - sls: influxdb.ssl.absent
