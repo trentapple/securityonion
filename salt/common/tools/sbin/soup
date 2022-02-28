@@ -521,6 +521,7 @@ stop_salt_minion() {
 }
 
 up_to_2.3.20(){
+  echo "up_to_2.3.20 called"
   DOCKERSTUFFBIP=$(echo $DOCKERSTUFF | awk -F'.' '{print $1,$2,$3,1}' OFS='.')/24
   # Remove PCAP from global
   sed '/pcap:/d' /opt/so/saltstack/local/pillar/global.sls
@@ -559,6 +560,7 @@ up_to_2.3.20(){
 }
 
 up_to_2.3.30() {
+  echo "up_to_2.3.30 called"
   # Replace any curly brace scalars with the same scalar in single quotes
   readarray -t minion_pillars <<< "$(find /opt/so/saltstack/local/pillar/minions -type f -name '*.sls')"
   for pillar in "${minion_pillars[@]}"; do
@@ -582,6 +584,7 @@ up_to_2.3.30() {
 }
 
 up_to_2.3.50() {
+  echo "up_to_2.3.50 called"
   
   cat <<EOF > /tmp/supersed.txt
 /so-zeek:/ {
@@ -614,7 +617,7 @@ EOF
 }
 
 up_to_2.3.80() {
-  
+  echo "up_to_2.3.80 called"
   # Remove watermark settings from global.sls
   sed -i '/  cluster_routing_allocation_disk/d' /opt/so/saltstack/local/pillar/global.sls
 
@@ -654,6 +657,7 @@ up_to_2.3.80() {
 }
 
 up_to_2.3.90() {
+  echo "up_to_2.3.90 called"
   for i in manager managersearch eval standalone; do
     echo "Checking for compgen match of /opt/so/saltstack/local/pillar/minions/*_$i.sls"
     if compgen -G "/opt/so/saltstack/local/pillar/minions/*_$i.sls"; then
@@ -713,6 +717,7 @@ up_to_2.3.90() {
 }
 
 up_to_2.3.100() {
+  echo "up_to_2.3.100 called"
   fix_wazuh
   
   echo "Removing /opt/so/state files for patched Salt InfluxDB module and state. This is due to Salt being upgraded and needing to patch the files again."
@@ -730,6 +735,7 @@ up_to_2.3.100() {
 }
 
 up_to_2.3.110() {
+  echo "up_to_2.3.110 called"
   echo "Updating to Security Onion 2.3.110"
   echo "Updating shard settings for Elasticsearch index templates"
   sed -i 's|shards|index_template:\n        template:\n          settings:\n            index:\n              number_of_shards|g' /opt/so/saltstack/local/pillar/global.sls
