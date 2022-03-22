@@ -20,8 +20,6 @@ if [ "$(id -u)" -ne 0 ]; then
 	exit 1
 fi
 
-source ./so-common
-
 INSTALL_LOG=/root/so-analyst-install.log
 exec &> >(tee -a "$INSTALL_LOG")
 
@@ -130,7 +128,14 @@ CANCURL=$(curl -sI https://securityonionsolutions.com/ | grep "200 OK")
 
 # Place repo to download packages from repo.securityonion.net
 if [[ ! -f /etc/yum.repos.d/securityonion.repo ]] || [[ ! -f /etc/yum.repos.d/securityonioncache.repo ]]; then
-  securityonion_repo
+  yum clean all
+  mkdir -vp /root/oldrepos
+  mv -v /etc/yum.repos.d/* /root/oldrepos/
+  cp -f "$REPO_CONF_DIR/securityonion.repo" /etc/yum.repos.d/
+  yum repolist all
+  yum -v -y update centos-release
+  find /etc/yum.repos.d/ -type f -not -name 'securityonion*repo' -print0 | xargs -0 -I {} mv -bvf {} /root/oldrepos/
+  yum repolist all
 fi
 
 # Install a GUI text editor

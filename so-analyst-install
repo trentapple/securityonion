@@ -15,6 +15,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+export REPO_CONF_DIR="$(dirname "$0")/salt/repo/client/files/centos"
+export SCRIPT_START_DIR="$(dirname "$0")"
+
 cd "$(dirname "$0")/salt/common/tools/sbin" || exit 255
 
 ./so-analyst-install
