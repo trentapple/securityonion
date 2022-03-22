@@ -126,6 +126,11 @@ CANCURL=$(curl -sI https://securityonionsolutions.com/ | grep "200 OK")
     sleep 3
   fi
 
+# Place repo to download packages from repo.securityonion.net
+if [[ ! -f /etc/yum.repos.d/securityonion.repo ]] || [[ ! -f /etc/yum.repos.d/securityonioncache.repo ]]; then
+  securityonion_repo
+fi
+
 # Install a GUI text editor
 yum -y install gedit
 
@@ -143,51 +148,7 @@ yum -y install file-roller
 yum -y install mono-core mono-basic mono-winforms expect
 
 # Install NetworkMiner
-yum -y install libcanberra-gtk2;
-wget https://www.netresec.com/?download=NetworkMiner -O /tmp/nm.zip;
-mkdir -p /opt/networkminer/
-unzip /tmp/nm.zip -d /opt/networkminer/;
-rm /tmp/nm.zip;
-mv /opt/networkminer/NetworkMiner_*/* /opt/networkminer/
-chmod +x /opt/networkminer/NetworkMiner.exe;
-chmod -R go+w /opt/networkminer/AssembledFiles/;
-chmod -R go+w /opt/networkminer/Captures/;
-# Create networkminer shim
-cat << EOF >> /bin/networkminer
-#!/bin/bash
-/bin/mono /opt/networkminer/NetworkMiner.exe --noupdatecheck "\$@"
-EOF
-chmod +x /bin/networkminer
-# Convert networkminer ico file to png format
-yum -y install ImageMagick
-convert /opt/networkminer/networkminericon.ico /opt/networkminer/networkminericon.png
-# Create menu entry
-cat << EOF >> /usr/share/applications/networkminer.desktop
-[Desktop Entry]
-Name=NetworkMiner
-Comment=NetworkMiner
-Encoding=UTF-8
-Exec=/bin/networkminer %f
-Icon=/opt/networkminer/networkminericon-4.png
-StartupNotify=true
-Terminal=false
-X-MultipleArgs=false
-Type=Application
-MimeType=application/x-pcap;
-Categories=Network;
-EOF
-
-# Set default monospace font to Liberation
-cat << EOF >> /etc/fonts/local.conf
- <match target="pattern">
-  <test name="family" qual="any">
-   <string>monospace</string>
-  </test>
-  <edit binding="strong" mode="prepend" name="family">
-   <string>Liberation Mono</string>
-  </edit>
- </match>
-EOF
+yum -y install securityonion-networkminer
 
 # Install Wireshark for Gnome
 yum -y install wireshark-gnome; 
@@ -223,83 +184,30 @@ yum -y install tcpxtract;
 yum -y install whois;
 
 # Install foremost
-yum -y install https://forensics.cert.org/centos/cert/7/x86_64//foremost-1.5.7-13.1.el7.x86_64.rpm;
+yum -y install securityonion-foremost
 
 # Install chromium
 yum -y install chromium;
 
 # Install tcpstat
-yum -y install https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/securityonion-tcpstat-1.5.0/securityonion-tcpstat-1.5.0.rpm;
+yum -y install securityonion-tcpstat;
 
 # Install tcptrace
-yum -y install https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/securityonion-tcptrace-6.6.7/securityonion-tcptrace-6.6.7.rpm;
+yum -y install securityonion-tcptrace;
 
 # Install sslsplit
 yum -y install libevent;
 yum -y install sslsplit;
 
 # Install Bit-Twist
-yum -y install https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/securityonion-bittwist-2.0.0/securityonion-bittwist-2.0.0.rpm;
+yum -y install securityonion-bittwist;
 
 # Install chaosreader
 yum -y install perl-IO-Compress perl-Net-DNS;
-yum -y install https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/securityonion-chaosreader-0.95.10/securityonion-chaosreader-0.95.10.rpm;
-chmod +x /bin/chaosreader;
+yum -y install securityonion-chaosreader;
 
-if [ -f ../../files/analyst/README ]; then
-  cp ../../files/analyst/README /;
-  cp ../../files/analyst/so-wallpaper.jpg /usr/share/backgrounds/;
-  cp ../../files/analyst/so-lockscreen.jpg /usr/share/backgrounds/;
-  cp ../../files/analyst/so-login-logo-dark.svg /usr/share/pixmaps/;
-else
-  cp /opt/so/saltstack/default/salt/common/files/analyst/README /;
-  cp /opt/so/saltstack/default/salt/common/files/analyst/so-wallpaper.jpg /usr/share/backgrounds/;
-  cp /opt/so/saltstack/default/salt/common/files/analyst/so-lockscreen.jpg /usr/share/backgrounds/;
-  cp /opt/so/saltstack/default/salt/common/files/analyst/so-login-logo-dark.svg /usr/share/pixmaps/;
-fi
-
-# Set background wallpaper
-cat << EOF >> /etc/dconf/db/local.d/00-background
-# Specify the dconf path
-[org/gnome/desktop/background]
-
-# Specify the path to the desktop background image file
-picture-uri='file:///usr/share/backgrounds/so-wallpaper.jpg'
-# Specify one of the rendering options for the background image:
-# 'none', 'wallpaper', 'centered', 'scaled', 'stretched', 'zoom', 'spanned'
-picture-options='zoom'
-# Specify the left or top color when drawing gradients or the solid color
-primary-color='000000'
-# Specify the right or bottom color when drawing gradients
-secondary-color='FFFFFF'
-EOF
-
-# Set lock screen
-cat << EOF >> /etc/dconf/db/local.d/00-screensaver
-[org/gnome/desktop/session]
-idle-delay=uint32 180
-
-[org/gnome/desktop/screensaver]
-lock-enabled=true
-lock-delay=uint32 120
-picture-options='zoom'
-picture-uri='file:///usr/share/backgrounds/so-lockscreen.jpg'
-EOF
-
-cat << EOF >> /etc/dconf/db/local.d/locks/screensaver
-/org/gnome/desktop/session/idle-delay
-/org/gnome/desktop/screensaver/lock-enabled
-/org/gnome/desktop/screensaver/lock-delay
-EOF
-
-# Do not show the user list at login screen
-cat << EOF >> /etc/dconf/db/local.d/00-login-screen
-[org/gnome/login-screen]
-logo='/usr/share/pixmaps/so-login-logo-dark.svg'
-disable-user-list=true
-EOF
-
-dconf update;
+# Install package that contains and sets wallpaper, lockscreen, prevents user list at login screen and runs `dconf update`
+yum -y install securityonion-analyst-extras
 
 echo
 echo "Analyst workstation has been installed!"
