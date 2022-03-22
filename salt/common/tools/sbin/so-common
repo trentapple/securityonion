@@ -367,6 +367,37 @@ run_check_net_err() {
 		exit $exit_code
 	fi
 }
+
+securityonion_repo() {
+	# Remove all the current repos
+	if [[ "$OS" == "centos" ]]; then
+		if [[ "$INTERWEBS" == "AIRGAP" ]]; then
+			echo "This is airgap I don't need to add this repo"
+		else
+			if [[ ! $is_manager && "$MANAGERUPDATES" == "1" ]]; then
+				local repo_conf_file="../salt/repo/client/files/centos/securityonioncache.repo"
+			else
+				local repo_conf_file="../salt/repo/client/files/centos/securityonion.repo"
+			fi
+			# need to yum clean all before repo conf files are removed or clean,cleans nothing
+			logCmd "yum -v clean all"
+			logCmd "mkdir -vp /root/oldrepos"
+			logCmd "mv -v /etc/yum.repos.d/* /root/oldrepos/"
+			logCmd "ls -la /etc/yum.repos.d/"
+			logCmd "cp -f $repo_conf_file /etc/yum.repos.d/"
+			logCmd "yum repolist all"
+			# update this package because the repo config files get added back
+			# if the package is updated when the update_packages function is called
+			logCmd "yum -v -y update centos-release"
+			echo "Move the .repo files that were added by the centos-release package."
+			find /etc/yum.repos.d/ -type f -not -name 'securityonion*repo' -print0 | xargs -0 -I {} mv -bvf {} /root/oldrepos/
+			logCmd "yum repolist all"
+		fi
+	else
+		echo "This is Ubuntu"
+	fi
+}
+
 set_cron_service_name() {
   if [[ "$OS" == "centos" ]]; then
     cron_service_name="crond"

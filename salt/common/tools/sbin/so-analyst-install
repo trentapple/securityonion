@@ -20,6 +20,13 @@ if [ "$(id -u)" -ne 0 ]; then
 	exit 1
 fi
 
+# if /etc/soversion doesn't exist then setup hasnt been run before and we need to source from a different location
+if [[ ! -f /etc/soversion ]]; then
+  source ../salt/common/tools/sbin/so-common
+else
+  source /usr/sbin/so-common
+fi
+
 INSTALL_LOG=/root/so-analyst-install.log
 exec &> >(tee -a "$INSTALL_LOG")
 
