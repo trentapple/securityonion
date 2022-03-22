@@ -126,11 +126,14 @@ CANCURL=$(curl -sI https://securityonionsolutions.com/ | grep "200 OK")
     sleep 3
   fi
 
+cp: cannot stat ‘./salt/repo/client/files/centos/securityonion.repo’: No such file or directory
 # Place repo to download packages from repo.securityonion.net
 if [[ ! -f /etc/yum.repos.d/securityonion.repo ]] || [[ ! -f /etc/yum.repos.d/securityonioncache.repo ]]; then
   yum clean all
   mkdir -vp /root/oldrepos
   mv -v /etc/yum.repos.d/* /root/oldrepos/
+  cp -f "$REPO_CONF_DIR/keys/RPM-GPG-KEY-EPEL-7" /etc/pki/rpm-gpg/
+  cp -f "$REPO_CONF_DIR/keys/securityonion.pub" /etc/pki/rpm-gpg/
   cp -f "$REPO_CONF_DIR/securityonion.repo" /etc/yum.repos.d/
   yum repolist all
   yum -v -y update centos-release
