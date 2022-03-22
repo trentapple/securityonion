@@ -126,7 +126,6 @@ CANCURL=$(curl -sI https://securityonionsolutions.com/ | grep "200 OK")
     sleep 3
   fi
 
-cp: cannot stat ‘./salt/repo/client/files/centos/securityonion.repo’: No such file or directory
 # Place repo to download packages from repo.securityonion.net
 if [[ ! -f /etc/yum.repos.d/securityonion.repo ]] || [[ ! -f /etc/yum.repos.d/securityonioncache.repo ]]; then
   yum clean all
