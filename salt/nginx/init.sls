@@ -104,6 +104,11 @@ so-nginx:
       - /opt/so/conf/navigator/enterprise-attack.json:/opt/socore/html/navigator/assets/enterprise-attack.json:ro
       - /opt/so/conf/navigator/pre-attack.json:/opt/socore/html/navigator/assets/pre-attack.json:ro
   {% endif %}
+  {% if grains.role in ['so-sensor'] %}
+      - /opt/so/conf/nginx/etc/pki/nginx.crt:/etc/pki/nginx/server.crt:ro
+      - /opt/so/conf/nginx/etc/pki/nginx.key:/etc/pki/nginx/server.key:ro
+  {% endif %}
+
   {% if ISAIRGAP is sameas true %}
       - /nsm/repo:/opt/socore/html/repo:ro
   {% endif %}
@@ -127,6 +132,10 @@ so-nginx:
       - x509: managerssl_crt
       - file: navigatorconfig
       - file: navigatordefaultlayer
+  {% endif %}
+  {% if grains.role in ['so-sensor'] %}
+      - x509: nginx_key
+      - x509: nginx_crt
   {% endif %}
 
 append_so-nginx_so-status.conf:

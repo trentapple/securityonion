@@ -2,6 +2,11 @@
 {# we only want this state to run it is CentOS #}
 {% if grains.os == 'CentOS' %}
 
+  {% set COMMONNAME = grains.master %}
+  {% set HOSTNAME = salt['grains.get']('host') %}
+  {% set MAININT = salt['pillar.get']('host:mainint') %}
+  {% set MAINIP = salt['grains.get']('ip_interfaces').get(MAININT)[0] %}
+
   {% set global_ca_text = [] %}
   {% set global_ca_server = [] %}
   {% set manager = salt['grains.get']('master') %}
@@ -25,6 +30,50 @@ update_ca_certs:
     - name: update-ca-trust
     - onchanges:
       - x509: trusted_ca
+
+strelka_cert_directory:
+  file.directory:
+    - name: /opt/so/conf/strelka/etc/pki
+    - makedirs: True
+
+strelka_key:
+  x509.private_key_managed:
+    - name: /opt/so/conf/strelka/etc/pki/strelka.key
+    - CN: {{ COMMONNAME }}
+    - bits: 4096
+    - days_remaining: 0
+    - days_valid: 820
+    - backup: True
+    - new: True
+    {% if salt['file.file_exists']('/opt/so/conf/strelka/etc/pki/strelka.key') -%}
+    - prereq:
+      - x509: strelka_crt
+    {%- endif %}
+    - timeout: 30
+    - retry:
+        attempts: 5
+        interval: 30
+
+# Request a cert and drop it where it needs to go to be distributed
+strelka_crt:
+  x509.certificate_managed:
+    - name: /opt/so/conf/strelka/etc/pki/strelka.crt
+    - ca_server: {{ ca_server }}
+    - signing_policy: managerssl
+    - public_key: /opt/so/conf/strelka/etc/pki/strelka.key
+    - CN: {{ HOSTNAME }}
+    - subjectAltName: DNS:{{ HOSTNAME }}, IP:{{ MAINIP }}
+    - days_remaining: 0
+    - days_valid: 820
+    - backup: True
+    - unless:
+      # https://github.com/saltstack/salt/issues/52167
+      # Will trigger 5 days (432000 sec) from cert expiration
+      - 'enddate=$(date -d "$(openssl x509 -in /opt/so/conf/strelka/etc/pki/strelka.crt -enddate -noout | cut -d= -f2)" +%s) ; now=$(date +%s) ; expire_date=$(( now + 432000)); [ $enddate -gt $expire_date ]'
+    - timeout: 30
+    - retry:
+        attempts: 5
+        interval: 30
 
 {% else %}
 

@@ -447,6 +447,52 @@ fleetkeyperms:
 
 {% endif %}
 
+{% if grains.role in ['so-sensor'] %}
+nginx_cert_directory:
+  file.directory:
+    - name: /opt/so/conf/nginx/etc/pki
+    - makedirs: True
+
+nginx_key:
+  x509.private_key_managed:
+    - name: /opt/so/conf/nginx/etc/pki/nginx.key
+    - CN: {{ COMMONNAME }}
+    - bits: 4096
+    - days_remaining: 0
+    - days_valid: 820
+    - backup: True
+    - new: True
+    {% if salt['file.file_exists']('/opt/so/conf/nginx/etc/pki/nginx.key') -%}
+    - prereq:
+      - x509: nginx_crt
+    {%- endif %}
+    - timeout: 30
+    - retry:
+        attempts: 5
+        interval: 30
+
+# Request a cert and drop it where it needs to go to be distributed
+nginx_crt:
+  x509.certificate_managed:
+    - name: /opt/so/conf/nginx/etc/pki/nginx.crt
+    - ca_server: {{ ca_server }}
+    - signing_policy: managerssl
+    - public_key: /opt/so/conf/nginx/etc/pki/nginx.key
+    - CN: {{ HOSTNAME }}
+    - subjectAltName: DNS:{{ HOSTNAME }}, IP:{{ MAINIP }}
+    - days_remaining: 0
+    - days_valid: 820
+    - backup: True
+    - unless:
+      # https://github.com/saltstack/salt/issues/52167
+      # Will trigger 5 days (432000 sec) from cert expiration
+      - 'enddate=$(date -d "$(openssl x509 -in /opt/so/conf/nginx/etc/pki/nginx.crt -enddate -noout | cut -d= -f2)" +%s) ; now=$(date +%s) ; expire_date=$(( now + 432000)); [ $enddate -gt $expire_date ]'
+    - timeout: 30
+    - retry:
+        attempts: 5
+        interval: 30
+{% endif %}
+
 {% if grains['role'] in ['so-sensor', 'so-manager', 'so-node', 'so-eval', 'so-helix', 'so-managersearch', 'so-heavynode', 'so-fleet', 'so-standalone', 'so-idh', 'so-import', 'so-receiver'] %}
    
 fbcertdir:
