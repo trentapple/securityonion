@@ -7,18 +7,19 @@ The built-in analyzers support the following observable types:
 
 | Name                    | Domain | Hash  | IP    | JA3   | Mail  | Other | URI   |  URL  | User Agent |
 | ------------------------|--------|-------|-------|-------|-------|-------|-------|-------|------------
-| Alienvault OTX          |&check; |&check;|&check;|&cross;|&cross;|&cross;|&cross;|&check;|&cross;|
-| EmailRep                |&cross; |&cross;|&cross;|&cross;|&check;|&cross;|&cross;|&cross;|&cross;|
-| Greynoise               |&cross; |&cross;|&check;|&cross;|&cross;|&cross;|&cross;|&cross;|&cross;|
-| JA3er                   |&cross; |&cross;|&cross;|&check;|&cross;|&cross;|&cross;|&cross;|&cross;|
-| LocalFile               |&check; |&check;|&check;|&check;|&cross;|&check;|&cross;|&check;|&cross;|
-| Malware Hash Registry   |&cross; |&check;|&cross;|&cross;|&cross;|&cross;|&cross;|&check;|&cross;|
-| Pulsedive               |&check; |&check;|&check;|&cross;|&cross;|&cross;|&check;|&check;|&check;|
-| Spamhaus                |&cross; |&cross;|&check;|&cross;|&cross;|&cross;|&cross;|&cross;|&cross;|
-| Urlhaus                 |&cross; |&cross;|&cross;|&cross;|&cross;|&cross;|&cross;|&check;|&cross;|
-| Urlscan                 |&cross; |&cross;|&cross;|&cross;|&cross;|&cross;|&cross;|&check;|&cross;|
-| Virustotal              |&check; |&check;|&check;|&cross;|&cross;|&cross;|&cross;|&check;|&cross;|
-| WhoisLookup             |&check; |&cross;|&cross;|&cross;|&cross;|&cross;|&check;|&cross;|&cross;|
+| Alienvault OTX          |&check; |&check;|&check;|||||&check;||
+| EmailRep                | ||||&check;|||||
+| Greynoise               |||&check;|||||||
+| JA3er                   ||||&check;||||||
+| LocalFile               |&check; |&check;|&check;|&check;||&check;||&check;||
+| Malware Hash Registry   ||&check;||||||&check;||
+| Pulsedive               |&check; |&check;|&check;||||&check;|&check;|&check;|
+| Spamhaus                |||&check;|||||||
+| Urlhaus                 ||||||||&check;||
+| Urlscan                 ||||||||&check;||
+| Virustotal              |&check; |&check;|&check;|||||&check;||
+| WhoisLookup             |&check; ||||||&check;|||
+
 
 ## Authentication
 Many analyzers require authentication, via an API key or similar. The table below illustrates which analyzers require authentication.
@@ -28,15 +29,15 @@ Many analyzers require authentication, via an API key or similar. The table belo
 [AlienVault OTX](https://otx.alienvault.com/api)            |&check;|
 [EmailRep](https://emailrep.io/key)                  |&check;|
 [GreyNoise](https://www.greynoise.io/plans/community)                 |&check;|
-[JA3er](https://ja3er.com/)                     |&cross;|
-LocalFile                 |&cross;|
-[Malware Hash Registry](https://hash.cymru.com/docs_whois)    |&cross;|
+[JA3er](https://ja3er.com/)                     ||
+LocalFile                 ||
+[Malware Hash Registry](https://hash.cymru.com/docs_whois)    ||
 [Pulsedive](https://pulsedive.com/api/)                 |&check;|
-[Spamhaus](https://www.spamhaus.org/dbl/)                  |&cross;|
-[Urlhaus](https://urlhaus.abuse.ch/)                   |&cross;|
+[Spamhaus](https://www.spamhaus.org/dbl/)                  ||
+[Urlhaus](https://urlhaus.abuse.ch/)                   ||
 [Urlscan](https://urlscan.io/docs/api/)                   |&check;|
 [VirusTotal](https://developers.virustotal.com/reference/overview)                |&check;|
-[WhoisLookup](https://github.com/meeb/whoisit)           |&cross;|
+[WhoisLookup](https://github.com/meeb/whoisit)           ||
 
 
 ## Developer Guide
